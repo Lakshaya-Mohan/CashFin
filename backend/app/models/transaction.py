@@ -2,7 +2,7 @@ from datetime import date, datetime
 from decimal import Decimal
 from typing import TYPE_CHECKING
 
-from sqlalchemy import ForeignKey, String, Date, DateTime, Numeric
+from sqlalchemy import ForeignKey, String, Date, DateTime, Numeric, Index
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
@@ -25,6 +25,11 @@ class Transaction(Base):
     description: Mapped[str | None] = mapped_column(String(500), nullable=True)
     source: Mapped[str | None] = mapped_column(String(100), nullable=True)
     external_id: Mapped[str | None] = mapped_column(String(255), nullable=True, unique=True)
+    # CashFin-generated duplicate-detection signal.
+    # SHA-256(account_id|date|amount|normalized_description|transaction_type).
+    # NOT a business identifier — the same transaction imported twice should produce
+    # the same fingerprint and be flagged as POSSIBLE_DUPLICATE.
+    fingerprint: Mapped[str | None] = mapped_column(String(64), nullable=True, index=True)
     
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, nullable=False)
 

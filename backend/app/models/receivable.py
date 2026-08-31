@@ -27,8 +27,10 @@ class Receivable(Base):
     
     confidence: Mapped[Decimal] = mapped_column(Numeric(5, 4), nullable=False, default=Decimal('0.8000'))
     
-    status: Mapped[str] = mapped_column(String(50), nullable=False)  # EXPECTED, RECEIVED, DELAYED, CANCELLED
+    status: Mapped[str] = mapped_column(String(50), nullable=False)
     description: Mapped[str | None] = mapped_column(String(500), nullable=True)
+    # Invoice number or other external reference. Used for idempotent ingestion.
+    external_id: Mapped[str | None] = mapped_column(String(255), nullable=True, unique=True)
     
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, nullable=False)
 

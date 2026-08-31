@@ -1,0 +1,17 @@
+[
+  {
+    "invoice_number": "INV-1234",
+    "customer": "XYZ Customer",
+    "amount": 60000,
+    "invoice_date": "2026-08-20",
+    "due_date": "2026-09-10",
+    "description": "Consulting Services"
+  },
+  {
+    "invoice_number": "INV-1235",
+    "customer": "LMN Corp",
+    "amount": 40000,
+    "invoice_date": "2026-08-21",
+    "due_date": "2026-09-15"
+  }
+]

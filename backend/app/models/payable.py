@@ -31,8 +31,10 @@ class Payable(Base):
     penalty_risk: Mapped[int] = mapped_column(Integer, nullable=False, default=3)
     flexibility: Mapped[int] = mapped_column(Integer, nullable=False, default=3)
     
-    status: Mapped[str] = mapped_column(String(50), nullable=False)  # PENDING, PAID, DEFERRED, CANCELLED
+    status: Mapped[str] = mapped_column(String(50), nullable=False)
     description: Mapped[str | None] = mapped_column(String(500), nullable=True)
+    # External reference (e.g., purchase order, expense ID). Used for idempotent ingestion.
+    external_id: Mapped[str | None] = mapped_column(String(255), nullable=True, unique=True)
     
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, nullable=False)
 

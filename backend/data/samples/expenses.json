@@ -1,0 +1,17 @@
+[
+  {
+    "vendor": "ABC Hardware",
+    "amount": 12500,
+    "expense_date": "2026-08-25",
+    "description": "Hardware supplies",
+    "paid": true
+  },
+  {
+    "vendor": "Office Depot",
+    "amount": 5000,
+    "expense_date": "2026-09-05",
+    "description": "Office furniture",
+    "is_future_obligation": true,
+    "due_date": "2026-09-20"
+  }
+]
