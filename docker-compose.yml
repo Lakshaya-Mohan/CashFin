@@ -1,0 +1,25 @@
+services:
+  db:
+    image: postgres:18
+    container_name: cashfin-postgres
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_DB: cashfin
+      POSTGRES_USER: cashfin_user
+      POSTGRES_PASSWORD: cashfin_password
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - postgres_data:/var/lib/postgresql
+
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U cashfin_user -d cashfin" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
