@@ -6,7 +6,7 @@ from app.schemas.financial_state import (
     FinancialState, 
     UpcomingPayable, 
     UpcomingReceivable, 
-    ProjectionMode,
+    ReceivableMode,
     EventType
 )
 from app.services.cash_flow import CashFlowService
@@ -145,9 +145,9 @@ def test_confidence_adjusted_mode(base_state):
     ]
     
     # Mode RAW: +1000 -> 2000 - 1200 -> 800 (No zero breach)
-    raw_proj = CashFlowService.calculate_projection(base_state, minimum_cash_buffer=Decimal('0.00'), projection_mode=ProjectionMode.RAW)
+    raw_proj = CashFlowService.calculate_projection(base_state, minimum_cash_buffer=Decimal('0.00'), receivable_mode=ReceivableMode.RAW)
     assert raw_proj.days_to_zero is None
     
     # Mode CONFIDENCE_ADJUSTED: +500 -> 1500 - 1200 -> 300 (Still no zero breach, but value is different)
-    adj_proj = CashFlowService.calculate_projection(base_state, minimum_cash_buffer=Decimal('0.00'), projection_mode=ProjectionMode.CONFIDENCE_ADJUSTED)
+    adj_proj = CashFlowService.calculate_projection(base_state, minimum_cash_buffer=Decimal('0.00'), receivable_mode=ReceivableMode.CONFIDENCE_ADJUSTED)
     assert adj_proj.projected_balances[date(2026, 9, 5)] == Decimal('300.00')

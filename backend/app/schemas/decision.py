@@ -4,7 +4,7 @@ from typing import List, Optional
 from pydantic import BaseModel, ConfigDict
 from enum import Enum
 
-from app.schemas.financial_state import ProjectionMode
+from app.schemas.financial_state import ReceivableMode
 
 
 class ActionType(str, Enum):
@@ -82,7 +82,7 @@ class DecisionResult(BaseModel):
     """
     feasible: bool
     as_of_date: date
-    projection_mode: ProjectionMode
+    receivable_mode: ReceivableMode
 
     initial_cash: Decimal
     minimum_cash_buffer: Decimal

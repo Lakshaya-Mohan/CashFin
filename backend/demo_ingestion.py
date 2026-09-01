@@ -1,5 +1,12 @@
 import os
 import sys
+import io
+
+if hasattr(sys.stdout, "reconfigure"):
+    try:
+        sys.stdout.reconfigure(encoding="utf-8")
+    except Exception:
+        pass
 from datetime import date
 from decimal import Decimal
 
@@ -17,7 +24,7 @@ from app.services.ingestion_service import (
 )
 from app.schemas.ingestion import IngestionResult
 from app.services.financial_state import FinancialStateService
-from app.schemas.financial_state import ProjectionMode
+from app.schemas.financial_state import ReceivableMode
 
 def print_result(title: str, res: IngestionResult):
     print(f"\n--- {title} ---")

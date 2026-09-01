@@ -13,7 +13,7 @@ import pytest
 from datetime import date
 from decimal import Decimal
 
-from app.schemas.financial_state import UpcomingReceivable, ProjectionMode
+from app.schemas.financial_state import UpcomingReceivable, ReceivableMode
 from app.schemas.decision import ActionType, Obligation
 from app.services.decision_engine import DecisionEngine
 
@@ -527,7 +527,7 @@ def test_F_raw_vs_confidence_adjusted_different_outcomes():
         obligations=obligations,
         receivables=receivables,
         as_of_date=AS_OF,
-        projection_mode=ProjectionMode.RAW,
+        receivable_mode=ReceivableMode.RAW,
     )
     result_adj = engine.evaluate_obligations(
         current_cash=Decimal("40000.00"),
@@ -535,7 +535,7 @@ def test_F_raw_vs_confidence_adjusted_different_outcomes():
         obligations=obligations,
         receivables=receivables,
         as_of_date=AS_OF,
-        projection_mode=ProjectionMode.CONFIDENCE_ADJUSTED,
+        receivable_mode=ReceivableMode.CONFIDENCE_ADJUSTED,
     )
     # In RAW mode: obligation is selected for payment
     paid_raw = {od.obligation.payable_id for od in result_raw.selected_obligations}
@@ -543,6 +543,6 @@ def test_F_raw_vs_confidence_adjusted_different_outcomes():
     # In CONFIDENCE_ADJUSTED mode: obligation cannot be paid without breaching buffer
     paid_adj = {od.obligation.payable_id for od in result_adj.selected_obligations}
     assert 1 not in paid_adj
-    # Projection modes recorded correctly
-    assert result_raw.projection_mode == ProjectionMode.RAW
-    assert result_adj.projection_mode == ProjectionMode.CONFIDENCE_ADJUSTED
+    # Receivable modes recorded correctly
+    assert result_raw.receivable_mode == ReceivableMode.RAW
+    assert result_adj.receivable_mode == ReceivableMode.CONFIDENCE_ADJUSTED

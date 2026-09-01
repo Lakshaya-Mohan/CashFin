@@ -1,3 +1,12 @@
+import sys
+import io
+
+if hasattr(sys.stdout, "reconfigure"):
+    try:
+        sys.stdout.reconfigure(encoding="utf-8")
+    except Exception:
+        pass
+
 from datetime import date
 from decimal import Decimal
 
@@ -5,7 +14,7 @@ from app.db.database import SessionLocal
 from app.models.company import Company
 from app.services.financial_state import FinancialStateService
 from app.services.cash_flow import CashFlowService
-from app.schemas.financial_state import ProjectionMode
+from app.schemas.financial_state import ReceivableMode
 
 def run_demo():
     print("--- CashFin Financial State Demo ---")
@@ -34,7 +43,7 @@ def run_demo():
         projection = CashFlowService.calculate_projection(
             state=state,
             minimum_cash_buffer=min_buffer,
-            projection_mode=ProjectionMode.RAW
+            projection_mode=ReceivableMode.RAW
         )
         
         print(f"\n=== CASH FLOW PROJECTION (RAW) ===")

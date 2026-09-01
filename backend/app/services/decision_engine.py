@@ -59,7 +59,7 @@ from decimal import Decimal
 from itertools import combinations
 from typing import List, Optional, Tuple, Dict
 
-from app.schemas.financial_state import UpcomingReceivable, ProjectionMode
+from app.schemas.financial_state import UpcomingReceivable, ReceivableMode
 from app.schemas.decision import (
     Obligation, ObligationDecision, ActionType, DecisionFactor,
     DecisionResult, TimelineEntry
@@ -96,7 +96,7 @@ class DecisionEngine:
         obligations: List[Obligation],
         receivables: List[UpcomingReceivable],
         as_of_date: date,
-        projection_mode: ProjectionMode = ProjectionMode.RAW,
+        receivable_mode: ReceivableMode = ReceivableMode.RAW,
     ) -> DecisionResult:
         """
         Entry point for the Decision Engine.
@@ -108,7 +108,7 @@ class DecisionEngine:
         """
         total_obligations = sum(o.amount for o in obligations)
         total_expected_inflows = sum(
-            r.amount if projection_mode == ProjectionMode.RAW else r.amount * r.confidence
+            r.amount if receivable_mode == ReceivableMode.RAW else r.amount * r.confidence
             for r in receivables
         )
 
@@ -131,7 +131,7 @@ class DecisionEngine:
                 is_feasible, ending_cash, min_cash, date_of_min, timeline, _ = \
                     self._simulate_timeline(
                         current_cash, paid_set, receivables,
-                        minimum_cash_buffer, projection_mode
+                        minimum_cash_buffer, receivable_mode
                     )
 
                 if not is_feasible:
@@ -154,7 +154,7 @@ class DecisionEngine:
         if best_scenario is None:
             return self._build_infeasible_result(
                 current_cash, minimum_cash_buffer, obligations, receivables,
-                as_of_date, projection_mode, total_obligations,
+                as_of_date, receivable_mode, total_obligations,
                 total_expected_inflows, deferral_costs
             )
 
@@ -195,7 +195,7 @@ class DecisionEngine:
         return DecisionResult(
             feasible=True,
             as_of_date=as_of_date,
-            projection_mode=projection_mode,
+            receivable_mode=receivable_mode,
             initial_cash=current_cash,
             minimum_cash_buffer=minimum_cash_buffer,
             total_obligations=total_obligations,
@@ -294,7 +294,7 @@ class DecisionEngine:
         paid_obligations: List[Obligation],
         receivables: List[UpcomingReceivable],
         minimum_cash_buffer: Decimal,
-        projection_mode: ProjectionMode,
+        receivable_mode: ReceivableMode,
     ) -> Tuple[bool, Decimal, Decimal, Optional[date], List[TimelineEntry], Optional[date]]:
         """
         Simulate cash balance through time for a proposed payment strategy.
@@ -317,7 +317,7 @@ class DecisionEngine:
                            f"PAY: {o.description or o.counterparty_name}", o.payable_id))
 
         for r in receivables:
-            amount = r.amount if projection_mode == ProjectionMode.RAW else r.amount * r.confidence
+            amount = r.amount if receivable_mode == ReceivableMode.RAW else r.amount * r.confidence
             events.append((r.expected_date, False, amount,
                            f"INFLOW: {r.description or 'Receivable'}", r.id))
 
@@ -387,7 +387,7 @@ class DecisionEngine:
         obligations: List[Obligation],
         receivables: List[UpcomingReceivable],
         as_of_date: date,
-        projection_mode: ProjectionMode,
+        receivable_mode: ReceivableMode,
         total_obligations: Decimal,
         total_expected_inflows: Decimal,
         deferral_costs: Dict[int, float],
@@ -397,7 +397,7 @@ class DecisionEngine:
         establish the baseline timeline and identify the breach point.
         """
         _, ending_cash, min_cash, date_of_min, timeline, _ = self._simulate_timeline(
-            current_cash, [], receivables, minimum_cash_buffer, projection_mode
+            current_cash, [], receivables, minimum_cash_buffer, receivable_mode
         )
 
         shortfall = (minimum_cash_buffer - min_cash) if min_cash < minimum_cash_buffer else Decimal('0.00')
@@ -422,7 +422,7 @@ class DecisionEngine:
         return DecisionResult(
             feasible=False,
             as_of_date=as_of_date,
-            projection_mode=projection_mode,
+            receivable_mode=receivable_mode,
             initial_cash=current_cash,
             minimum_cash_buffer=minimum_cash_buffer,
             total_obligations=total_obligations,

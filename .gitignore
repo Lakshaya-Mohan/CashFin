@@ -3,3 +3,6 @@ __pycache__/
 .env
 *.pyc
 .pytest_cache/
+# ML model artifacts
+backend/app/ml/models/*.joblib
+*.joblib

@@ -14,10 +14,19 @@ The engine must reason about actual dates (not just total cash vs total obligati
 Key insight: paying Salary + Supplier A causes a buffer breach on Sep 3
 before the receivable arrives on Sep 5.
 """
+import sys
+import io
+
+if hasattr(sys.stdout, "reconfigure"):
+    try:
+        sys.stdout.reconfigure(encoding="utf-8")
+    except Exception:
+        pass
+
 from datetime import date
 from decimal import Decimal
 
-from app.schemas.financial_state import UpcomingReceivable, ProjectionMode
+from app.schemas.financial_state import UpcomingReceivable, ReceivableMode
 from app.schemas.decision import Obligation, ActionType
 from app.services.decision_engine import DecisionEngine
 
@@ -81,7 +90,7 @@ def run_stress_test():
         obligations=obligations,
         receivables=receivables,
         as_of_date=date(2026, 9, 1),
-        projection_mode=ProjectionMode.RAW,
+        projection_mode=ReceivableMode.RAW,
     )
 
     print(f"\nProjection Mode : {result.projection_mode}")
@@ -155,7 +164,7 @@ def run_stress_test():
         obligations=obligations,
         receivables=receivables,
         as_of_date=date(2026, 9, 1),
-        projection_mode=ProjectionMode.RAW,
+        projection_mode=ReceivableMode.RAW,
     )
     paid1 = sorted(od.obligation.payable_id for od in result.selected_obligations)
     paid2 = sorted(od.obligation.payable_id for od in result2.selected_obligations)

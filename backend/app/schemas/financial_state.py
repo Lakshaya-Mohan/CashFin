@@ -4,9 +4,14 @@ from typing import List, Optional
 from pydantic import BaseModel, ConfigDict
 from enum import Enum
 
-class ProjectionMode(str, Enum):
+class ReceivableMode(str, Enum):
     RAW = "RAW"
     CONFIDENCE_ADJUSTED = "CONFIDENCE_ADJUSTED"
+
+class ForecastMode(str, Enum):
+    CONFIRMED_ONLY = "CONFIRMED_ONLY"
+    FORECAST_INCLUDED = "FORECAST_INCLUDED"
+    CONSERVATIVE = "CONSERVATIVE"
 
 class EventType(str, Enum):
     INFLOW = "INFLOW"
@@ -18,6 +23,7 @@ class CashFlowEvent(BaseModel):
     event_type: EventType
     source_id: int
     description: Optional[str] = None
+    is_predicted: bool = False
     
     model_config = ConfigDict(from_attributes=True)
 
@@ -64,7 +70,8 @@ class CashFlowProjection(BaseModel):
     as_of_date: date
     starting_balance: Decimal
     minimum_cash_buffer: Decimal
-    projection_mode: ProjectionMode
+    receivable_mode: ReceivableMode
+    forecast_mode: ForecastMode = ForecastMode.CONFIRMED_ONLY
     
     events: List[CashFlowEvent] = []
     projected_balances: dict[date, Decimal] = {}
