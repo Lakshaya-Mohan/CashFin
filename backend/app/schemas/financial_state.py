@@ -80,5 +80,6 @@ class CashFlowProjection(BaseModel):
     days_to_buffer_breach: Optional[int] = None
     
     shortfalls: List[BreachEvent] = []
+    minimum_projected_balance: Optional[Decimal] = None
 
     model_config = ConfigDict(from_attributes=True)

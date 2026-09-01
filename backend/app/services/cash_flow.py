@@ -191,6 +191,8 @@ class CashFlowService:
                     )
                 )
 
+        min_balance = min(projected_balances.values()) if projected_balances else state.current_cash
+
         return CashFlowProjection(
             as_of_date=state.as_of_date,
             starting_balance=state.current_cash,
@@ -202,4 +204,5 @@ class CashFlowService:
             days_to_zero=days_to_zero,
             days_to_buffer_breach=days_to_buffer_breach,
             shortfalls=shortfalls,
+            minimum_projected_balance=min_balance,
         )

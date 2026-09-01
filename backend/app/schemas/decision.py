@@ -104,3 +104,14 @@ class DecisionResult(BaseModel):
     timeline: List[TimelineEntry] = []
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class DecisionRequest(BaseModel):
+    """Request payload for POST /api/v1/companies/{company_id}/decision"""
+    as_of_date: Optional[date] = None
+    minimum_cash_buffer: Decimal = Decimal("0.00")
+    receivable_mode: ReceivableMode = ReceivableMode.RAW
+    forecast_mode: str = "CONFIRMED_ONLY"
+
+    model_config = ConfigDict(from_attributes=True)
+
